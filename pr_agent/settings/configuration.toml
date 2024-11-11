@@ -1,14 +1,14 @@
 [config]
 # models
-model="gpt-4-turbo-2024-04-09"
-model_turbo="gpt-4o-2024-08-06"
+model="gpt-4-turbo-preview"
+model_turbo="gpt-4-turbo-preview"
 fallback_models=["gpt-4o-2024-05-13"]
 # CLI
-git_provider="github"
+git_provider="azure"
 publish_output=true
 publish_output_progress=true
 publish_output_no_suggestions=true
-verbosity_level=0 # 0,1,2
+verbosity_level=1 # 0,1,2
 use_extra_bad_extensions=false
 # Configurations
 use_wiki_settings_file=true
@@ -54,12 +54,12 @@ require_can_be_split_review=false
 require_security_review=true
 require_ticket_analysis_review=true
 # general options
-num_code_suggestions=0
+num_code_suggestions=2
 inline_code_comments = false
 ask_and_reflect=false
 #automatic_review=true
 persistent_comment=true
-extra_instructions = ""
+extra_instructions = "check if static string BuildLogFile is efficient. check logic error with the if (i == 7) part. check for code duplication"
 final_update_message = true
 # review labels
 enable_review_labels_security=true
