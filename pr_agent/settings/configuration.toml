@@ -1,14 +1,21 @@
 [config]
 # models
-model="gpt-4-turbo-preview"
-model_turbo="gpt-4-turbo-preview"
-fallback_models=["gpt-4o-2024-05-13"]
+#model = "ollama/codegemma:7b-instruct"
+#model = "ollama/eramax/nxcode-cq-7b-orpo:q6"
+#model="ollama/deepseek-coder-v2"
+#model="ollama/qwen2.5-coder" - rossz output
+model="ollama/sammcj/qwen2.5-coder-7b-instruct:q8_0"
+#model="ollama/qwen2.5-coder:32b-instruct-q4_1" - rossz output
+#model="ollama/qwen2.5-coder:14b"
+#model="ollama/qwen2.5-coder:32b" - rossz output
+#fallback_models=["ollama/qwen2.5-coder"]
+fallback_models=[]
 # CLI
 git_provider="azure"
 publish_output=true
 publish_output_progress=true
 publish_output_no_suggestions=true
-verbosity_level=1 # 0,1,2
+verbosity_level=2 # 0,1,2
 use_extra_bad_extensions=false
 # Configurations
 use_wiki_settings_file=true
@@ -17,16 +24,16 @@ use_global_settings_file=true
 ai_timeout=120 # 2minutes
 skip_keys = []
 # token limits
-max_description_tokens = 500
-max_commits_tokens = 500
-max_model_tokens = 32000 # Limits the maximum number of tokens that can be used by any model, regardless of the model's default capabilities.
+max_description_tokens = -1
+max_commits_tokens = -1
+max_model_tokens = -1 # Limits the maximum number of tokens that can be used by any model, regardless of the model's default capabilities.
 custom_model_max_tokens=-1 # for models not in the default list
 # patch extension logic
 patch_extension_skip_types =[".md",".txt"]
 allow_dynamic_context=true
 max_extra_lines_before_dynamic_context = 8 # will try to include up to 10 extra lines before the hunk in the patch, until we reach an enclosing function or class
-patch_extra_lines_before = 3 # Number of extra lines (+3 default ones) to include before each hunk in the patch
-patch_extra_lines_after = 1 # Number of extra lines (+3 default ones) to include after each hunk in the patch
+patch_extra_lines_before = 10 # Number of extra lines (+3 default ones) to include before each hunk in the patch
+patch_extra_lines_after = 10 # Number of extra lines (+3 default ones) to include after each hunk in the patch
 secret_provider=""
 cli_mode=false
 ai_disclaimer_title=""  # Pro feature, title for a collapsible disclaimer to AI outputs
@@ -54,16 +61,16 @@ require_can_be_split_review=false
 require_security_review=true
 require_ticket_analysis_review=true
 # general options
-num_code_suggestions=2
+num_code_suggestions=5
 inline_code_comments = false
 ask_and_reflect=false
 #automatic_review=true
 persistent_comment=true
-extra_instructions = "check if static string BuildLogFile is efficient. check logic error with the if (i == 7) part. check for code duplication"
+extra_instructions = "Do not mention findings that should be found via building the solution. "
 final_update_message = true
 # review labels
-enable_review_labels_security=true
-enable_review_labels_effort=true
+enable_review_labels_security=false
+enable_review_labels_effort=false
 # specific configurations for incremental review (/review -i)
 require_all_thresholds_for_incremental_review=false
 minimal_commits_for_incremental_review=0
@@ -107,7 +114,7 @@ enable_help_text=false
 
 
 [pr_code_suggestions] # /improve #
-max_context_tokens=14000
+max_context_tokens=128000
 #
 commitable_code_suggestions = false
 dual_publishing_score_threshold=-1 # -1 to disable, [0-10] to set the threshold (>=) for publishing a code suggestion both in a table and as commitable

@@ -69,4 +69,13 @@ MAX_TOKENS = {
     "watsonx/ibm/granite-13b-chat-v2": 8191,
     "watsonx/ibm/granite-34b-code-instruct": 8191,
     "watsonx/mistralai/mistral-large": 32768,
+    "ollama/qwen2.5-coder": 128000,
+    "ollama/qwen2.5-coder:14b": 128000,
+    "ollama/qwen2.5-coder:32b": 128000,
+    "ollama/qwen2.5-coder:32b-instruct-q4_1": 128000,
+    "ollama/sammcj/qwen2.5-coder-7b-instruct:q8_0": 128000,
+    "ollama/llama3.1:8b": 128000,
+    "ollama/codegemma:7b-instruct": 128000,
+    "ollama/deepseek-coder-v2": 128000,
+    "ollama/eramax/nxcode-cq-7b-orpo:q6": 128000,
 }
