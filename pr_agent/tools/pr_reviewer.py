@@ -145,7 +145,7 @@ class PRReviewer:
                 self.git_provider.remove_initial_comment()
                 return None
 
-            pr_review = self._prepare_pr_review()
+            pr_review = self.prediction.strip()
             get_logger().debug(f"PR output", artifact=pr_review)
 
             if get_settings().config.publish_output:
@@ -161,7 +161,19 @@ class PRReviewer:
 
                 self.git_provider.remove_initial_comment()
                 if get_settings().pr_reviewer.inline_code_comments:
-                    self._publish_inline_code_comments()
+                    # Extract code suggestions using regex
+                    code_suggestions = re.findall(r'### Code Suggestions.*?```.*?File: `([^`]+)`.*?Line (\d+):(.*?)```', pr_review, re.DOTALL)
+                    if code_suggestions:
+                        comments = []
+                        for file, line, suggestion in code_suggestions:
+                            if self.git_provider.is_supported("create_inline_comment"):
+                                comment = self.git_provider.create_inline_comment(suggestion.strip(), file.strip(), int(line))
+                                if comment:
+                                    comments.append(comment)
+                            else:
+                                self.git_provider.publish_inline_comment(suggestion.strip(), file.strip(), int(line), {})
+                        if comments:
+                            self.git_provider.publish_inline_comments(comments)
         except Exception as e:
             get_logger().error(f"Failed to review PR: {e}")
 
@@ -204,111 +216,6 @@ class PRReviewer:
         )
 
         return response
-
-    def _prepare_pr_review(self) -> str:
-        """
-        Prepare the PR review by processing the AI prediction and generating a markdown-formatted text that summarizes
-        the feedback.
-        """
-        first_key = 'review'
-        last_key = 'security_concerns'
-        data = load_yaml(self.prediction.strip(),
-                         keys_fix_yaml=["ticket_compliance_check", "estimated_effort_to_review_[1-5]:", "security_concerns:", "key_issues_to_review:",
-                                        "relevant_file:", "relevant_line:", "suggestion:"],
-                         first_key=first_key, last_key=last_key)
-        github_action_output(data, 'review')
-
-        # move data['review'] 'key_issues_to_review' key to the end of the dictionary
-        if 'key_issues_to_review' in data['review']:
-            key_issues_to_review = data['review'].pop('key_issues_to_review')
-            data['review']['key_issues_to_review'] = key_issues_to_review
-
-        if 'code_feedback' in data:
-            code_feedback = data['code_feedback']
-
-            # Filter out code suggestions that can be submitted as inline comments
-            if get_settings().pr_reviewer.inline_code_comments:
-                del data['code_feedback']
-            else:
-                for suggestion in code_feedback:
-                    if ('relevant_file' in suggestion) and (not suggestion['relevant_file'].startswith('``')):
-                        suggestion['relevant_file'] = f"``{suggestion['relevant_file']}``"
-
-                    if 'relevant_line' not in suggestion:
-                        suggestion['relevant_line'] = ''
-
-                    relevant_line_str = suggestion['relevant_line'].split('\n')[0]
-
-                    # removing '+'
-                    suggestion['relevant_line'] = relevant_line_str.lstrip('+').strip()
-
-                    # try to add line numbers link to code suggestions
-                    if hasattr(self.git_provider, 'generate_link_to_relevant_line_number'):
-                        link = self.git_provider.generate_link_to_relevant_line_number(suggestion)
-                        if link:
-                            suggestion['relevant_line'] = f"[{suggestion['relevant_line']}]({link})"
-                    else:
-                        pass
-
-        incremental_review_markdown_text = None
-        # Add incremental review section
-        if self.incremental.is_incremental:
-            last_commit_url = f"{self.git_provider.get_pr_url()}/commits/" \
-                              f"{self.git_provider.incremental.first_new_commit_sha}"
-            incremental_review_markdown_text = f"Starting from commit {last_commit_url}"
-
-        markdown_text = convert_to_markdown_v2(data, self.git_provider.is_supported("gfm_markdown"),
-                                            incremental_review_markdown_text, git_provider=self.git_provider)
-
-        # Add help text if gfm_markdown is supported
-        if self.git_provider.is_supported("gfm_markdown") and get_settings().pr_reviewer.enable_help_text:
-            markdown_text += "<hr>\n\n<details> <summary><strong>💡 Tool usage guide:</strong></summary><hr> \n\n"
-            markdown_text += HelpMessage.get_review_usage_guide()
-            markdown_text += "\n</details>\n"
-
-        # Output the relevant configurations if enabled
-        if get_settings().get('config', {}).get('output_relevant_configurations', False):
-            markdown_text += show_relevant_configurations(relevant_section='pr_reviewer')
-
-        # Add custom labels from the review prediction (effort, security)
-        self.set_review_labels(data)
-
-        if markdown_text == None or len(markdown_text) == 0:
-            markdown_text = ""
-
-        return markdown_text
-
-    def _publish_inline_code_comments(self) -> None:
-        """
-        Publishes inline comments on a pull request with code suggestions generated by the AI model.
-        """
-        if get_settings().pr_reviewer.num_code_suggestions == 0:
-            return
-
-        first_key = 'review'
-        last_key = 'security_concerns'
-        data = load_yaml(self.prediction.strip(),
-                         keys_fix_yaml=["ticket_compliance_check", "estimated_effort_to_review_[1-5]:", "security_concerns:", "key_issues_to_review:",
-                                        "relevant_file:", "relevant_line:", "suggestion:"],
-                         first_key=first_key, last_key=last_key)
-        comments: List[str] = []
-        for suggestion in data.get('code_feedback', []):
-            relevant_file = suggestion.get('relevant_file', '').strip()
-            relevant_line_in_file = suggestion.get('relevant_line', '').strip()
-            content = suggestion.get('suggestion', '')
-            if not relevant_file or not relevant_line_in_file or not content:
-                get_logger().info("Skipping inline comment with missing file/line/content")
-                continue
-
-            if self.git_provider.is_supported("create_inline_comment"):
-                comment = self.git_provider.create_inline_comment(content, relevant_file, relevant_line_in_file)
-                if comment:
-                    comments.append(comment)
-            else:
-                self.git_provider.publish_inline_comment(content, relevant_file, relevant_line_in_file, suggestion)
-
-        if comments:
-            self.git_provider.publish_inline_comments(comments)
 
     def _get_user_answers(self) -> Tuple[str, str]:
         """
