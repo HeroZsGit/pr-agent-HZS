@@ -1,10 +1,6 @@
 [ignore]
+glob = ['*.sch', '*.cxx']
 
-glob = [
-    # Ignore files and directories matching these glob patterns.
-    # See https://docs.python.org/3/library/glob.html
-    'vendor/**',
-]
 regex = [
     # Ignore files and directories matching these regex patterns.
     # See https://learnbyexample.github.io/python-regex-cheatsheet/

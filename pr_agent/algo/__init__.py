@@ -13,7 +13,7 @@ MAX_TOKENS = {
     'gpt-4-0125-preview': 128000,  # 128K, but may be limited by config.max_model_tokens
     'gpt-4o': 128000,  # 128K, but may be limited by config.max_model_tokens
     'gpt-4o-2024-05-13': 128000,  # 128K, but may be limited by config.max_model_tokens
-    'gpt-4-turbo-preview': 128000,  # 128K, but may be limited by config.max_model_tokens
+    'gpt-4-turbo-preview': 30000,  # 128K, but may be limited by config.max_model_tokens
     'gpt-4-turbo-2024-04-09': 128000,  # 128K, but may be limited by config.max_model_tokens
     'gpt-4-turbo': 128000,  # 128K, but may be limited by config.max_model_tokens
     'gpt-4o-mini': 128000,  # 128K, but may be limited by config.max_model_tokens
@@ -75,6 +75,7 @@ MAX_TOKENS = {
     "ollama/qwen2.5-coder:32b-instruct-q4_1": 128000,
     "ollama/sammcj/qwen2.5-coder-7b-instruct:q8_0": 128000,
     "ollama/llama3.1:8b": 128000,
+    "ollama/llama3.2": 128000,
     "ollama/codegemma:7b-instruct": 128000,
     "ollama/deepseek-coder-v2": 128000,
     "ollama/eramax/nxcode-cq-7b-orpo:q6": 128000,

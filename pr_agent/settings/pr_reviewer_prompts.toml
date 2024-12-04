@@ -43,9 +43,6 @@ Please provide your review in the following plain text format:
 
 ## PR Review 🔍
 
-### Key Review Points ⚡
-[List the key points that need attention during review]
-
 ### Code Analysis 🔎
 [Provide a detailed analysis of the code changes]
 
@@ -77,4 +74,46 @@ Extra instructions from the user:
 {{ extra_instructions }}
 ======
 {% endif %}
+"""
+
+user="""Please review the following PR:
+
+Title: {{ title }}
+Branch: {{ branch }}
+Description: {{ description }}
+Language: {{ language }}
+Number of files: {{ num_pr_files }}
+
+{%- if commit_messages_str %}
+Commit messages:
+{{ commit_messages_str }}
+{%- endif %}
+
+{%- if question_str %}
+Previous questions:
+{{ question_str }}
+{%- endif %}
+
+{%- if answer_str %}
+Answers:
+{{ answer_str }}
+{%- endif %}
+
+Here is the PR diff:
+{{ diff }}
+
+Please provide a thorough code review focusing on:
+1. Code correctness and potential bugs
+2. Performance implications
+3. Security considerations
+4. Overall code quality and maintainability
+
+{%- if num_code_suggestions > 0 %}
+For code suggestions, use this format:
+```
+File: `filename.py`
+Line 123:
+Suggested improvement here
+```
+{%- endif %}
 """

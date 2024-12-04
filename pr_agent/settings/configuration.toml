@@ -3,8 +3,10 @@
 #model = "ollama/codegemma:7b-instruct"
 #model = "ollama/eramax/nxcode-cq-7b-orpo:q6"
 #model="ollama/deepseek-coder-v2"
+model="ollama/llama3.2"
 #model="ollama/qwen2.5-coder" - rossz output
-model="ollama/sammcj/qwen2.5-coder-7b-instruct:q8_0"
+#model="ollama/sammcj/qwen2.5-coder-7b-instruct:q8_0" -best
+#model="gpt-4-turbo-preview"
 #model="ollama/qwen2.5-coder:32b-instruct-q4_1" - rossz output
 #model="ollama/qwen2.5-coder:14b"
 #model="ollama/qwen2.5-coder:32b" - rossz output
@@ -29,7 +31,7 @@ max_commits_tokens = -1
 max_model_tokens = -1 # Limits the maximum number of tokens that can be used by any model, regardless of the model's default capabilities.
 custom_model_max_tokens=-1 # for models not in the default list
 # patch extension logic
-patch_extension_skip_types =[".md",".txt"]
+patch_extension_skip_types =[".md",".txt",".cxx",".sch"]
 allow_dynamic_context=true
 max_extra_lines_before_dynamic_context = 8 # will try to include up to 10 extra lines before the hunk in the patch, until we reach an enclosing function or class
 patch_extra_lines_before = 10 # Number of extra lines (+3 default ones) to include before each hunk in the patch
@@ -208,7 +210,7 @@ base_url = "https://api.github.com"
 publish_inline_comments_fallback_with_verification = true
 try_fix_invalid_inline_comments = true
 app_name = "pr-agent"
-ignore_bot_pr = true
+ignoreignore_bot_pr = true
 
 [github_action_config]
 # auto_review = true    # set as env var in .github/workflows/pr-agent.yaml
