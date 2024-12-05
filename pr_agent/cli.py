@@ -47,6 +47,7 @@ def set_parser():
     """)
     parser.add_argument('--pr_url', type=str, help='The URL of the PR to review', default=None)
     parser.add_argument('--issue_url', type=str, help='The URL of the Issue to review', default=None)
+    parser.add_argument('--huggingface_api_base', type=str, help='The API base URL for Hugging Face', default=None)
     parser.add_argument('command', type=str, help='The', choices=commands, default='review')
     parser.add_argument('rest', nargs=argparse.REMAINDER, default=[])
     return parser

@@ -72,6 +72,7 @@ MAX_TOKENS = {
     "ollama/qwen2.5-coder": 128000,
     "ollama/qwen2.5-coder:14b": 128000,
     "ollama/qwen2.5-coder:32b": 128000,
+    "ollama/tinyllama": 128000,
     "ollama/qwen2.5-coder:32b-instruct-q4_1": 128000,
     "ollama/sammcj/qwen2.5-coder-7b-instruct:q8_0": 128000,
     "ollama/llama3.1:8b": 128000,

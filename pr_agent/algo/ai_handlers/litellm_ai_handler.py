@@ -70,7 +70,12 @@ class LiteLLMAIHandler(BaseAiHandler):
             litellm.replicate_key = get_settings().replicate.key
         if get_settings().get("HUGGINGFACE.KEY", None):
             litellm.huggingface_key = get_settings().huggingface.key
-        if get_settings().get("HUGGINGFACE.API_BASE", None) and 'huggingface' in get_settings().config.model:
+        # Check if the huggingface_api_base is provided via command line
+        huggingface_api_base = getattr(get_settings(), 'huggingface_api_base', None)
+        if huggingface_api_base:
+            litellm.api_base = huggingface_api_base
+            self.api_base = huggingface_api_base
+        elif get_settings().get("HUGGINGFACE.API_BASE", None) and 'huggingface' in get_settings().config.model:
             litellm.api_base = get_settings().huggingface.api_base
             self.api_base = get_settings().huggingface.api_base
         if get_settings().get("OLLAMA.API_BASE", None):
