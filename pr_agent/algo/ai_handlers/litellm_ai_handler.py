@@ -25,7 +25,9 @@ class LiteLLMAIHandler(BaseAiHandler):
         Raises a ValueError if the OpenAI key is missing.
         """
         self.azure = False
-        self.api_base = None
+        self.api_base = get_settings().get("HUGGINGFACE.API_BASE", None)
+        if self.api_base:
+            litellm.api_base = self.api_base
         self.repetition_penalty = None
         if get_settings().get("OPENAI.KEY", None):
             openai.api_key = get_settings().openai.key

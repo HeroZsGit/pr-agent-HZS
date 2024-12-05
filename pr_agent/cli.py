@@ -73,6 +73,9 @@ def run(inargs=None, args=None):
     command = args.command.lower()
     get_settings().set("CONFIG.CLI_MODE", True)
 
+    if args.huggingface_api_base:
+        get_settings().set("HUGGINGFACE.API_BASE", args.huggingface_api_base)
+
     async def inner():
         if args.issue_url:
             result = await asyncio.create_task(PRAgent().handle_request(args.issue_url, [command] + args.rest))
